@@ -142,12 +142,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # allauth
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+from django.urls import reverse_lazy
+SIGNUP_REDIRECT_URL = reverse_lazy('accounts:index')
+LOGIN_REDIRECT_URL = reverse_lazy('accounts:index')
+ACCOUNT_LOGOUT_REDIRECT_URL = reverse_lazy('accounts:index')
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 AUTH_USER_MODEL = 'accounts.User'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_LOGOUT_ON_GET = True
+
+# Email
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
