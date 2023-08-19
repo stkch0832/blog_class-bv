@@ -50,3 +50,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.email = self.__class__.objects.normalize_email(self.email)
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField('ユーザー名', max_length=30)
+    introduction = models.CharField('自己紹介', max_length=255, null=True, blank=True)
+    birth = models.DateField('生年月日', null=True, blank=True)
+
+    created_at = models.DateTimeField('作成日時', auto_now_add=True)
+    updated_at = models.DateTimeField('更新日時', auto_now=True)
+
+    def __str__(self):
+        return self.username

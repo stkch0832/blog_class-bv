@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}プロフィール | 詳細{% endblock %}
+
+{% block content %}
+<div class="container w-50 my-5">
+    <div class="card text-center">
+        <div class="card-body">
+        <h2 class="card-title">プロフィール</h2>
+            <div class="card-text">
+            <p>ユーザー名：<br>
+                    {{ profile_data.username }}
+            </p>
+            <p>自己紹介：<br>
+                {{ profile_data.introduction }}
+            </p>
+            <p>生年月日：<br>
+                {{ profile_data.birth }}
+            </p>
+            <p>アカウント日時：<br>
+                {{ profile_data.created_at }}
+            </p>
+            <p>最終更新日時：<br>
+                {{ profile_data.updated_at }}
+            </p>
+        </div>
+            <a class="btn btn-primary" href="{% url 'accounts:profile_edit' user_id %}">編集</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}プロフィール | 変更{% endblock %}
+
+{% block content %}
+<div class="container w-50 my-5">
+    <div class="card text-center">
+        <div class="card-body">
+            <h2 class="card-title">プロフィール：変更</h2>
+            <div class="card-text">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_table }}
+            </div>
+            <a class="btn btn-secondary" href="{% url 'accounts:profile_detail' user_id %}">戻る</a>
+            <button class="btn btn-primary" type="submit">更新</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
