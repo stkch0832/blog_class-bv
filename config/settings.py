@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # application
     'accounts',
+    'blog',
 
 ]
 
@@ -134,6 +135,8 @@ STATICFILES_DIRS = (
 	STATIC_DIR,
 )
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
