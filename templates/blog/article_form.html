@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if "new" in request.path %}
+ブログ | 新規投稿
+{% else %}
+ブログ | 内容変更
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center my-4">
+        {% if "new" in request.path %}
+        新規投稿
+        {% else %}
+        内容変更
+        {% endif %}
+    </h2>
+
+    <div class="w-50 mx-auto">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_table }}
+            <button class="btn btn-primary d-block ms-auto px-5" type="submit">
+                {% if "new" in request.path %}
+                投稿
+                {% else %}
+                変更
+                {% endif %}
+            </button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

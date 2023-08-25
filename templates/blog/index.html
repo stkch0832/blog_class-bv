@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}ブログ | 一覧{% endblock %}
+
+{% block content %}
+<div class="my-5 row">
+
+    <div class="col-9">
+
+        {% if keyword %}
+        <h4 class="mb-4">「{{ keyword }}の検索結果」</h4>
+        {% endif %}
+
+        {% for article in page_obj %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">{{ article.title }}<span class="small"> - {{ article.category }}</span></h2>
+                <p class="card-text">{{ article.content|truncatechars:30 }}</p>
+                <div class="btn btn-primary">詳細</div>
+            </div>
+            <div class="card-footer">
+                {{ article.created_at|date}} by {{ article.author.profile.username }}
+            </div>
+            <a href="{% url 'blog:article_detail' article.pk %}" class="stretched-link"></a>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <div class="col-3">
+
+        <div class="card my-4">
+            <h5 class="card-header">カテゴリ</h5>
+            <div class="card-body">
+                <div class="row">
+                    {% for category in category_data %}
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a href="{% url 'blog:category' category %}">
+                                    {{ category.name }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h5 class="card-header">検索</h5>
+            <div class="caed-body">
+                <form action="{% url 'blog:search' %}" method="GET" class="input-group">
+                    <input type="text" class="form-control" name="keyword" placeholder="ブログを検索...">
+                    <button class="btn btn-primary ms-2" type="submit">検索</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <div class="pagination">
+        <span class="step-links mx-auto mb-5">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endblock %}

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # application
     'accounts',
+    'blog',
 
 ]
 
@@ -74,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'blog.context_processors.common',
             ],
         },
     },
@@ -134,6 +136,8 @@ STATICFILES_DIRS = (
 	STATIC_DIR,
 )
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

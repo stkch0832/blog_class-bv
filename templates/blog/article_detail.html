@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}ブログ | 詳細{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="my-4">{{ article_data.title }}</h2>
+    <p>{{ article_data.category }}</p>
+    <hr>
+    <p>{{ article_data.created_at }} by {{ article_data.author.profile.username}}</p>
+    <hr>
+    {% if article_data.image %}
+    <div class="mb-5">
+        <img src="{{ article_data.image.url }}" alt="{{ article_data.image|cut:'blog/images/' }}">
+    </div>
+    {% endif %}
+    <p>{{ article_data.content|linebreaksbr }}</p>
+    {% if user.is_authenticated %}
+    <hr>
+    <div class="d-flex mb-5">
+        <a href="{% url 'blog:article_edit' article_data.id %}" class="btn btn-primary me-2">編集</a>
+        <form method="POST" action="{% url 'blog:article_delete' article_data.pk %}">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit" onclick='return confirm("本当に削除しますか？");'>削除</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
