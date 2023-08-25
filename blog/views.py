@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .models import Article
+from .models import Article, Category
 from .forms import ArticleForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import Q
+from functools import reduce
+from operator import and_
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):
@@ -37,6 +40,9 @@ class ArticleCreateView(LoginRequiredMixin, View):
             article_data = Article()
             article_data.author = request.user
             article_data.title = form.cleaned_data['title']
+            category = form.cleaned_data['category']
+            category_data = Category.objects.get(name=category)
+            article_data.category = category_data
             article_data.content = form.cleaned_data['content']
             article_data.image = form.cleaned_data['image']
             article_data.save()
@@ -63,6 +69,7 @@ class ArticleEditView(LoginRequiredMixin, View):
             request.POST or None,
             initial={
                 'title':article_data.title,
+                'category': article_data.category,
                 'content':article_data.content,
                 'image':article_data.image,
                 'created_at':article_data.created_at,
@@ -82,6 +89,9 @@ class ArticleEditView(LoginRequiredMixin, View):
         if form.is_valid():
             article_data = Article.objects.get(id=self.kwargs['pk'])
             article_data.title = form.cleaned_data['title']
+            category = form.cleaned_data['category']
+            category_date = Category.objects.get(name=category)
+            article_data.category = category_date
             article_data.content = form.cleaned_data['content']
             article_data.image = form.cleaned_data['image']
             article_data.save()
@@ -99,3 +109,32 @@ class ArticleDeleteView(LoginRequiredMixin, View):
         article_data.delete()
         messages.success(request, '投稿削除が完了しました')
         return redirect('blog:index')
+
+
+class CategoryView(View):
+    def get(self, request, *args, **kwargs):
+        category_data = Category.objects.get(name=self.kwargs['category'])
+        article_data = Article.objects.order_by('-id').filter(category=category_data)
+        return render(request, 'blog/index.html', context={
+            'article_data': article_data,
+        })
+
+
+class SearchView(View):
+    def get(self, request, *args, **kwargs):
+        article_data = Article.objects.order_by('-id')
+        keyword = request.GET.get('keyword')
+
+        if keyword:
+            exclusion_list = set([' ', '　'])
+            query_list = ''
+            for word in keyword:
+                if not word in exclusion_list:
+                    query_list += word
+            query = reduce(and_, [Q(title__icontains=q) | Q(content__icontains=q) for q in query_list])
+            article_data = article_data.filter(query)
+
+        return render(request, 'blog/index.html', context={
+            'keyword': keyword,
+            'page_obj': article_data,
+        })

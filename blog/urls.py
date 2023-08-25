@@ -9,4 +9,7 @@ urlpatterns = [
     path('article/<int:pk>/', views.ArticleDetailView.as_view(), name='article_detail'),
     path('article/<int:pk>/edit/', views.ArticleEditView.as_view(), name='article_edit'),
     path('article/<int:pk>/delete/', views.ArticleDeleteView.as_view(), name='article_delete'),
+
+    path('category/<str:category>/', views.CategoryView.as_view(), name='category'),
+    path('search/', views.SearchView.as_view(), name='search'),
 ]

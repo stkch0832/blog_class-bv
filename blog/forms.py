@@ -1,9 +1,15 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from .models import Category
 
 User = get_user_model()
 
 class ArticleForm(forms.Form):
+    category_data = Category.objects.all()
+    category_choice = {}
+    for category in category_data:
+        category_choice[category] = category
+
     title = forms.CharField(
         max_length=30,
         label='タイトル',
@@ -12,6 +18,11 @@ class ArticleForm(forms.Form):
             'class': 'form-control mb-3',
         })
         )
+    category = forms.ChoiceField(
+        label='カテゴリ',
+        widget=forms.Select,
+        choices=list(category_choice.items())
+    )
     content = forms.CharField(
         max_length=500,
         label='内容',
