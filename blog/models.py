@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+import datetime
 
 User = get_user_model()
 
@@ -22,3 +23,21 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CommentManager(models.Manager):
+    def fetch_by_article_id(self, article_id):
+        return self.filter(article_id=article_id).order_by('id').all()
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.CharField('コメント', max_length=255)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = CommentManager()
+
+    def __str__(self):
+        return self.article.title

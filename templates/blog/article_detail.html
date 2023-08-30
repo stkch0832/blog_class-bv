@@ -26,6 +26,37 @@
         </form>
     </div>
     {% endif %}
+
+    {% if comment_data %}
+    <h3 class="mb-3">コメント</h3>
+    <hr>
+    {% for comment in comment_data %}
+
+    <p>
+        {{ comment.user.profile.username }}さん
+        {{ comment.created_at }}<br>
+        {{ comment.comment }}
+    </p>
+    {% if comment.user_id == request.user.id %}
+    <form method="POST" action="{% url 'blog:comment_delete' article_data.pk comment.pk %}">
+        {% csrf_token %}
+        <button class="btn btn-outline-danger" type="submit" onclick='return confirm("本当に削除しますか？");'>削除</button>
+    </form>
+    {% endif %}
+    <hr>
+    {% endfor %}
+    {% endif %}
+
+    {% if not article_data.author_id == request.user.id %}
+    <h3 class="my-3">投稿フォーム</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-outline-success">コメント</button>
+
+    </form>
+    {% endif %}
+
 </div>
 
 {% endblock %}

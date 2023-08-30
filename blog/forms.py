@@ -40,3 +40,16 @@ class ArticleForm(forms.Form):
             'class': 'form-control mb-3',
         })
     )
+
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(
+        label='',
+        max_length=255,
+        required=True,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control mb-3',
+            'rows': 6,
+            'cols': 50,
+        })
+    )

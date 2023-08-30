@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .models import Article, Category
-from .forms import ArticleForm
+from .models import Article, Category, Comment
+from .forms import ArticleForm, CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -57,9 +57,38 @@ class ArticleCreateView(LoginRequiredMixin, View):
 class ArticleDetailView(View):
     def get(self, request, *args, **kwargs):
         article_data = Article.objects.select_related('author__profile').get(id=self.kwargs['pk'])
+        comment_data = Comment.objects.filter(article_id=self.kwargs['pk']).order_by('-id')
+        form = CommentForm(request.POST or None)
+
         return render(request, 'blog/article_detail.html', context= {
             'article_data': article_data,
+            'comment_data': comment_data,
+            'form': form,
         })
+
+    def post(self, request, *args, **kwargs):
+        comment_form = CommentForm(request.POST or None)
+        article_data = Article.objects.get(id=self.kwargs['pk'])
+        comment_data = Comment.objects.fetch_by_article_id(self.kwargs['pk'])
+
+        if comment_form.is_valid():
+            comment = Comment()
+            comment.comment = comment_form.cleaned_data['comment']
+            comment.article_id = self.kwargs['pk']
+            comment.user_id = request.user
+            comment.save()
+            return redirect('blog:article_detail', article_data.id)
+
+        return render(request, 'blog/article_detail.html', context={
+            'form': comment_form,
+            'article_data': article_data,
+            'comment_data': comment_data,
+        })
+
+    # def delete_comment(self, request, *args, **kwargs):
+    #     comment_data = Comment.objects.get(id=self.kwargs['comment_id'])
+    #     comment_data.delete()
+    #     return redirect('blog:article_detail')
 
 
 class ArticleEditView(LoginRequiredMixin, View):
@@ -102,13 +131,19 @@ class ArticleEditView(LoginRequiredMixin, View):
             'form': form
         })
 
-
 class ArticleDeleteView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         article_data = Article.objects.get(id=self.kwargs['pk'])
         article_data.delete()
         messages.success(request, '投稿削除が完了しました')
         return redirect('blog:index')
+
+
+class CommentDelete(View):
+    def post(self, request, *args, **kwargs):
+        comment_data = Comment.objects.get(id=self.kwargs['comment_id'])
+        comment_data.delete()
+        return redirect('blog:article_detail', pk=self.kwargs['pk'])
 
 
 class CategoryView(View):
